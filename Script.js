@@ -68,58 +68,90 @@ window.addEventListener('scroll', () => {
     }, { passive: true });
 })();
 
-// Booking form -> WhatsApp
+// ===============================
+// Booking Form -> WhatsApp
+// ===============================
 (function () {
-    const form = document.getElementById('bookingForm');
+
+    const form = document.getElementById("bookingForm");
     if (!form) return;
 
-    // Default travel date to today, minimum today
-    const dateInput = document.getElementById('bDate');
+    // Set today's date
+    const dateInput = document.getElementById("bDate");
     if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.min = today;
         dateInput.value = today;
     }
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener("submit", function (e) {
+
         e.preventDefault();
 
-        const name = document.getElementById('bName')?.value.trim() || 'N/A';
-        const phone = document.getElementById('bPhone')?.value.trim() || 'N/A';
-        const pickup = document.getElementById('bPickup')?.value || 'N/A';
-        const drop = document.getElementById('bDrop')?.value || 'N/A';
-        const date = document.getElementById('bDate')?.value || 'N/A';
-        const time = document.getElementById('bTime')?.value || 'N/A';
-        const vehicle = document.getElementById('bVehicle')?.value || 'Any';
-        const passengers = document.getElementById('bPassengers')?.value || 'N/A';
-        const notes = document.getElementById('bNotes')?.value.trim() || 'None';
+        const name = document.getElementById("bName").value.trim();
+        const phone = document.getElementById("bPhone").value.trim();
+        const pickup = document.getElementById("bPickup").value;
+        const drop = document.getElementById("bDrop").value;
+        const date = document.getElementById("bDate").value;
+        const time = document.getElementById("bTime").value;
+        const vehicle = document.getElementById("bVehicle").value;
+        const passengers = document.getElementById("bPassengers").value || "N/A";
+        const notes = document.getElementById("bNotes").value.trim() || "None";
 
-        const message = [
-            '🚖 *New Booking Request – Brijdarsan Tourist*',
-            '',
-            `👤 *Name:* ${name}`,
-            `📞 *Phone:* ${phone}`,
-            `📍 *Pickup:* ${pickup}`,
-            `📍 *Drop:* ${drop}`,
-            `📅 *Date:* ${date}`,
-            `🕐 *Time:* ${time}`,
-            `🚗 *Vehicle:* ${vehicle}`,
-            `👥 *Passengers:* ${passengers}`,
-            `📝 *Notes:* ${notes}`,
-            '',
-            'Please confirm my booking. Thank you! 🙏'
-        ].join('\n');
-
-        const whatsappURL = `https://wa.me/918700489107?text=${encodeURIComponent(message)}`;
-        window.open(whatsappURL, '_blank', 'noopener,noreferrer');
-
-        // Reset the button state briefly to prevent double submits
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            setTimeout(() => { submitBtn.disabled = false; }, 3000);
+        // Validation
+        if (!name) {
+            alert("Please enter your name.");
+            return;
         }
+
+        if (!/^[6-9]\d{9}$/.test(phone)) {
+            alert("Please enter a valid 10-digit mobile number.");
+            return;
+        }
+
+        if (!pickup || !drop || !date || !time) {
+            alert("Please fill all required fields.");
+            return;
+        }
+
+        const message = `🚖 *New Booking Request - Brijdarsan Tourist*
+
+👤 Name: ${name}
+📞 Phone: ${phone}
+📍 Pickup: ${pickup}
+📍 Drop: ${drop}
+📅 Travel Date: ${date}
+🕐 Pickup Time: ${time}
+🚗 Vehicle: ${vehicle}
+👥 Passengers: ${passengers}
+📝 Notes: ${notes}
+
+Please confirm my booking. Thank you! 🙏`;
+
+        const whatsappURL =
+            "https://wa.me/918700489107?text=" +
+            encodeURIComponent(message);
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Opening WhatsApp...";
+
+        // Open WhatsApp
+        window.location.href = whatsappURL;
+
+        // Reset button
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382..."></path>
+            </svg>
+            Send Booking Request via WhatsApp`;
+        }, 2000);
+
     });
+
 })();
 
 // Fade-in animation on scroll
